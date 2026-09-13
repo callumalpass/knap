@@ -2,14 +2,14 @@
 
 For JavaScript applications, see the [Prism, CodeMirror, and highlight.js integration guide](web.md).
 
-Knap Markdown highlights Knap expressions alongside the editor's built-in Markdown syntax. Files ending in `.knap` or `.knap.md` select it automatically. Existing `.md` templates can use it by selecting **Knap Markdown** manually. Installing the package does not change the language of ordinary Markdown files.
+Knap Markdown highlights Knap expressions alongside the editor's built-in Markdown syntax. Use `.knap` for Knap templates. The packages also recognize the legacy-compatible `.knap.md` suffix, and existing `.md` templates can use the syntax by selecting **Knap Markdown** manually. Installing the package does not change the language of ordinary Markdown files.
 
 ## VS Code and compatible editors
 
 For local development, launch the editor with this repository's extension folder:
 
 ```sh
-code --extensionDevelopmentPath="$PWD/editors/vscode" "$PWD/editors/examples/article.knap.md"
+code --extensionDevelopmentPath="$PWD/editors/vscode" "$PWD/editors/examples/article.knap"
 ```
 
 Use `cursor` instead of `code` for Cursor. The extension contains only declarative grammars, language configuration, and snippets; it does not run the template engine.
@@ -57,4 +57,4 @@ Sublime context references and YAML structure are checked separately; use Sublim
 
 The host integration was compared against [Shopify Liquid](https://github.com/Shopify/liquid-tm-grammar), [Twig for VS Code](https://github.com/mblode/vscode-twig-language-2), and [BetterJinja](https://github.com/Sublime-Instincts/BetterJinja). The YAML adapter incorporates BetterJinja's scalar and mapping-key integration techniques; its MIT notice is included in `sublime/ThirdPartyNotices.txt`.
 
-Use **Developer: Inspect Editor Tokens and Scopes** in VS Code or **Show Scope Name** in Sublime to inspect theme behavior in `examples/article.knap.md`.
+Use **Developer: Inspect Editor Tokens and Scopes** in VS Code or **Show Scope Name** in Sublime to inspect theme behavior in `examples/article.knap`.

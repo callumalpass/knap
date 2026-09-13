@@ -2,7 +2,7 @@
 
 Syntax highlighting and snippets for [Knap](https://github.com/obsidianmd/knap), a template language for creating Markdown.
 
-Open a `.knap` or `.knap.md` file, or select **Knap Markdown** as the language mode for an existing template. Markdown formatting is preserved around expressions:
+Use `.knap` for Knap templates. The extension also recognizes `.knap.md`, or you can select **Knap Markdown** as the language mode for an existing template. Markdown formatting is preserved around expressions:
 
 ```knap
 # {{ title | trim }}
