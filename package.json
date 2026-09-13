@@ -36,6 +36,15 @@
 		"*": {
 			"html": [
 				"dist/html.d.ts"
+			],
+			"prism": [
+				"dist/prism.d.ts"
+			],
+			"codemirror": [
+				"dist/codemirror.d.ts"
+			],
+			"highlightjs": [
+				"dist/highlightjs.d.ts"
 			]
 		}
 	},
@@ -49,6 +58,21 @@
 			"types": "./dist/html.d.ts",
 			"import": "./dist/html.js",
 			"require": "./dist/html.cjs"
+		},
+		"./prism": {
+			"types": "./dist/prism.d.ts",
+			"import": "./dist/prism.js",
+			"require": "./dist/prism.cjs"
+		},
+		"./codemirror": {
+			"types": "./dist/codemirror.d.ts",
+			"import": "./dist/codemirror.js",
+			"require": "./dist/codemirror.cjs"
+		},
+		"./highlightjs": {
+			"types": "./dist/highlightjs.d.ts",
+			"import": "./dist/highlightjs.js",
+			"require": "./dist/highlightjs.cjs"
 		}
 	},
 	"scripts": {
@@ -74,8 +98,14 @@
 		"dayjs": "^1.11.23"
 	},
 	"devDependencies": {
+		"@codemirror/language": "^6.12.4",
+		"@lezer/highlight": "^1.2.3",
 		"@shikijs/langs": "^4.4.3",
 		"@types/node": "^20.19.43",
+		"@types/prismjs": "^1.26.6",
+		"codemirror": "^5.65.21",
+		"highlight.js": "^11.12.0",
+		"prismjs": "^1.30.0",
 		"tsup": "^8.5.1",
 		"typescript": "^5.9.3",
 		"vitest": "^4.1.11",

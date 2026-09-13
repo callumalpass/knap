@@ -132,7 +132,7 @@ json('editors/vscode/syntaxes/knap-markdown.tmLanguage.json', {
 });
 
 // Translate the deliberately small TextMate subset above into native Sublime
-// contexts, so Markdown's .sublime-syntax can be embedded with a prototype.
+// contexts, so the inherited Markdown host can include the expression grammar.
 const contexts = {};
 const captures = value => value && new Map(Object.entries(value).map(([key, value]) => [Number(key), value.name]));
 function sublimePatterns(patterns, prefix) {

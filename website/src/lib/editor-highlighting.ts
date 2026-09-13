@@ -1,5 +1,6 @@
 import { maxHighlightLineLength } from './playground-limits';
 import { StreamLanguage, HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import type { Extension } from '@codemirror/state';
 import { Tag } from '@lezer/highlight';
 import { highlightLine } from './highlight';
 
@@ -56,6 +57,6 @@ export function editorLanguage(language: 'json' | 'md') {
   });
 }
 
-export const editorHighlighting = (language: 'json' | 'md') => [
+export const editorHighlighting = (language: 'json' | 'md'): Extension[] => [
   editorLanguage(language), syntaxHighlighting(editorHighlightStyle),
 ];

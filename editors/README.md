@@ -1,5 +1,7 @@
 # Editor support
 
+For JavaScript applications, see the [Prism, CodeMirror, and highlight.js integration guide](web.md).
+
 Knap Markdown highlights Knap expressions alongside the editor's built-in Markdown syntax. Files ending in `.knap` or `.knap.md` select it automatically. Existing `.md` templates can use it by selecting **Knap Markdown** manually. Installing the package does not change the language of ordinary Markdown files.
 
 ## VS Code and compatible editors

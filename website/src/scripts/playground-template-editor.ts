@@ -6,58 +6,31 @@ import { tags } from '@lezer/highlight';
 import { templateCompletions, type TemplateSuggestion } from '../lib/playground-completions';
 import { emptyTemplatePair, pairTemplateInput } from '../lib/playground-pairs';
 import { markdownPunctuationAt } from '../lib/markdown-punctuation';
-import { knapKeyword, knapConstant } from '../lib/knap-syntax';
+import { knapStreamParser } from '../../../src/codemirror';
 import { createPlaygroundEditor } from './playground-editor';
 
 export const templateLanguage = StreamLanguage.define({
-  startState: () => ({ close: '', quote: '', filter: false }),
+  ...knapStreamParser,
   token(stream, state) {
     if (stream.string.length > maxHighlightLineLength) {
-      stream.skipToEnd(); state.close = ''; state.quote = ''; state.filter = false;
+      stream.skipToEnd();
+      Object.assign(state, knapStreamParser.startState());
       return null;
     }
-    if (!state.close) {
-      if (stream.match('{{')) state.close = '}}';
-      else if (stream.match('{%')) state.close = '%}';
-      else if (stream.match('{#')) { state.close = '#}'; return 'comment'; }
-      else {
-        const length = markdownPunctuationAt(stream.string, stream.pos);
-        if (length) { stream.pos += length; return 'punctuation'; }
-        stream.next();
-        return null;
-      }
-      return 'punctuation';
+    // Keep the website's Markdown punctuation styling around the shared parser.
+    if (!state.close && !/^\{[{%#]/.test(stream.string.slice(stream.pos))) {
+      const length = markdownPunctuationAt(stream.string, stream.pos);
+      if (length) { stream.pos += length; return 'punctuation'; }
+      stream.next();
+      return null;
     }
-    if (state.close === '#}') {
-      if (stream.skipTo('#}')) { stream.match('#}'); state.close = ''; }
-      else stream.skipToEnd();
-      return 'comment';
-    }
-    if (!state.quote && stream.match(state.close)) {
-      state.close = ''; state.filter = false;
-      return 'punctuation';
-    }
-    if (state.quote || stream.peek() === '"' || stream.peek() === "'") {
-      if (!state.quote) state.quote = stream.next()!;
-      while (!stream.eol()) {
-        const char = stream.next();
-        if (char === '\\') stream.next();
-        else if (char === state.quote) { state.quote = ''; break; }
-      }
-      return 'string';
-    }
-    if (stream.eatSpace()) return null;
-    if (stream.match('||')) return 'operator';
-    if (stream.match('|')) { state.filter = true; return 'operator'; }
-    if (stream.match(/\d+(?:\.\d+)?/)) return 'number';
-    if (stream.match(/[a-zA-Z_$][\w$]*/)) {
-      if (state.filter) { state.filter = false; return 'filter'; }
-      return knapKeyword.test(stream.current()) || knapConstant.test(stream.current()) ? 'keyword' : 'variableName';
-    }
-    stream.next();
-    return 'punctuation';
+    return knapStreamParser.token(stream, state);
   },
-  tokenTable: { filter: tags.function(tags.variableName) },
+  tokenTable: {
+    'variable-2': tags.function(tags.variableName),
+    property: tags.variableName,
+    atom: tags.keyword,
+  },
 });
 
 export function createTemplateEditor(variables: () => Record<string, unknown>, wrap = false) {

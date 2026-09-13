@@ -182,6 +182,8 @@ Filters that deliberately preserve their input after invalid runtime data can re
 
 VS Code and Sublime Text packages are available in [editors/](editors/README.md). They highlight Knap inside Markdown and include template snippets. Use `.knap` or `.knap.md` filenames, or select **Knap Markdown** for an existing template.
 
+JavaScript applications can use the optional [Prism, CodeMirror, and highlight.js adapters](editors/web.md) through `knap/prism`, `knap/codemirror`, and `knap/highlightjs`.
+
 The syntax is inspired by Twig and Liquid.
 
 ```liquid
