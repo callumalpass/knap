@@ -1,0 +1,340 @@
+{
+  "name": "Knap",
+  "scopeName": "source.knap",
+  "patterns": [
+    {
+      "include": "#tags"
+    }
+  ],
+  "repository": {
+    "tags": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#output"
+        },
+        {
+          "include": "#logic"
+        }
+      ]
+    },
+    "comment": {
+      "name": "comment.block.knap",
+      "begin": "\\{#",
+      "end": "#\\}",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.begin.knap"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.end.knap"
+        }
+      }
+    },
+    "output": {
+      "name": "meta.embedded.inline.knap",
+      "begin": "\\{\\{-?",
+      "end": "-?\\}\\}|(?=\\{[{%])",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.knap"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.knap"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "logic": {
+      "name": "meta.embedded.block.knap",
+      "begin": "\\{%-?",
+      "end": "-?%\\}|(?=\\{[{%])",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.begin.knap"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.embedded.end.knap"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "expression": {
+      "patterns": [
+        {
+          "include": "#strings"
+        },
+        {
+          "match": "\\|\\|",
+          "name": "keyword.operator.knap"
+        },
+        {
+          "include": "#map-filter"
+        },
+        {
+          "include": "#filter"
+        },
+        {
+          "include": "#group"
+        },
+        {
+          "include": "#array"
+        },
+        {
+          "include": "#object"
+        },
+        {
+          "include": "#atoms"
+        },
+        {
+          "match": "[A-Za-z_$][\\w$]*",
+          "name": "variable.other.knap"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.knap",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.knap"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.knap"
+            }
+          },
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.knap"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.knap",
+          "begin": "'",
+          "end": "'",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.knap"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end.knap"
+            }
+          },
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.knap"
+            }
+          ]
+        }
+      ]
+    },
+    "map-filter": {
+      "begin": "(\\|(?!\\|))\\s*(map)\\b",
+      "end": "(?=\\|(?!\\|)|-?\\}\\}|-?%\\}|\\{[{%]|\\))",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.operator.pipe.knap"
+        },
+        "2": {
+          "name": "support.function.filter.knap"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "filter": {
+      "begin": "(\\|(?!\\|))\\s*([A-Za-z_$][\\w$]*)?",
+      "end": "(?=\\|(?!\\|)|-?\\}\\}|-?%\\}|\\{[{%]|\\))",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.operator.pipe.knap"
+        },
+        "2": {
+          "name": "support.function.filter.knap"
+        }
+      },
+      "patterns": [
+        {
+          "begin": ":",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.separator.knap"
+            }
+          },
+          "end": "(?=\\|(?!\\|)|-?\\}\\}|-?%\\}|\\{[{%]|\\))",
+          "patterns": [
+            {
+              "include": "#arguments"
+            }
+          ]
+        },
+        {
+          "match": "[A-Za-z_$][\\w$]*",
+          "name": "support.function.filter.knap"
+        }
+      ]
+    },
+    "arguments": {
+      "patterns": [
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#argument-group"
+        },
+        {
+          "match": "(\\.)\\s*([A-Za-z_$][\\w$]*)",
+          "name": "string.unquoted.argument.knap"
+        },
+        {
+          "include": "#atoms"
+        },
+        {
+          "match": "[A-Za-z_$][\\w$]*",
+          "name": "string.unquoted.argument.knap"
+        }
+      ]
+    },
+    "atoms": {
+      "patterns": [
+        {
+          "match": "(\\.)\\s*([A-Za-z_$][\\w$]*)",
+          "name": "variable.other.property.knap"
+        },
+        {
+          "match": "\\b(?:if|elseif|else|endif|for|in|endfor|set)\\b",
+          "name": "keyword.control.knap"
+        },
+        {
+          "match": "\\b(?:and|or|not|contains)\\b",
+          "name": "keyword.operator.word.knap"
+        },
+        {
+          "match": "\\b(?:true|false|null)\\b",
+          "name": "constant.language.knap"
+        },
+        {
+          "match": "(?<![\\w$])-?\\d+(?:\\.\\d+)?\\b",
+          "name": "constant.numeric.knap"
+        },
+        {
+          "match": "=>|==|!=|>=|<=|&&|\\|\\||\\?\\?|[=<>!+*/-]",
+          "name": "keyword.operator.knap"
+        },
+        {
+          "match": "\\\\.",
+          "name": "constant.character.escape.knap"
+        },
+        {
+          "match": "[.,:]",
+          "name": "punctuation.separator.knap"
+        }
+      ]
+    },
+    "group": {
+      "begin": "\\(",
+      "end": "\\)|(?=-?\\}\\}|-?%\\}|\\{[{%])",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.group.begin.knap"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.group.end.knap"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "array": {
+      "begin": "\\[",
+      "end": "\\]|(?=-?\\}\\}|-?%\\}|\\{[{%])",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.group.begin.knap"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.group.end.knap"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "object": {
+      "begin": "\\{(?![{%#])",
+      "end": "\\}|(?=-?\\}\\}|-?%\\}|\\{[{%])",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.group.begin.knap"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.group.end.knap"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#expression"
+        }
+      ]
+    },
+    "argument-group": {
+      "begin": "\\(",
+      "end": "\\)|(?=-?\\}\\}|-?%\\}|\\{[{%])",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.group.begin.knap"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.group.end.knap"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#arguments"
+        }
+      ]
+    }
+  }
+}

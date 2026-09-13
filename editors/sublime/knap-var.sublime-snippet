@@ -1,0 +1,6 @@
+<snippet>
+  <content><![CDATA[{{ ${1:title} }}]]></content>
+  <tabTrigger>knap-var</tabTrigger>
+  <scope>(text.html.markdown.knap | source.knap) - comment - string</scope>
+  <description>Output a value</description>
+</snippet>

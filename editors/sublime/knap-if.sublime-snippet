@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[{% if ${1:condition} %}
+$0
+{% endif %}]]></content>
+  <tabTrigger>knap-if</tabTrigger>
+  <scope>(text.html.markdown.knap | source.knap) - comment - string</scope>
+  <description>Conditional block</description>
+</snippet>

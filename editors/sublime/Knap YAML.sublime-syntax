@@ -1,0 +1,63 @@
+%YAML 1.2
+---
+# YAML integration adapted from BetterJinja (MIT); see ThirdPartyNotices.txt.
+name: Knap YAML host
+scope: source.yaml.knap
+version: 2
+hidden: true
+extends: Packages/YAML/YAML.sublime-syntax
+
+variables:
+  # A template at the start of a scalar is not a YAML flow mapping. Quoted
+  # colons and closing delimiters inside it must not end a mapping-key scan.
+  knap_interpolation: '\{\{(?:[^{}"'']|"(?:\\.|[^"\\])*"|''(?:\\.|[^''\\])*'')*\}\}'
+  yaml_plain_in: '(?:[^\s{{c_indicator}}]|[?:-][^\s{{c_flow_indicator}}])'
+  yaml_plain_out: '(?:[^\s{{c_indicator}}]|[?:-]\S)'
+  ns_plain_first_plain_in: '(?:{{yaml_plain_in}}|\{\{)'
+  ns_plain_first_plain_out: '(?:{{yaml_plain_out}}|\{\{)'
+  _flow_key_in_lookahead: |-
+    (?x:
+      (?=
+        (?:
+          (?:{{yaml_plain_in}}|{{knap_interpolation}})
+          (?:{{knap_interpolation}}|[^\s:{{c_flow_indicator}}]|:[^\s{{c_flow_indicator}}]|\s+(?![#\s]))*
+        | ".*"
+        | '.*'
+        )\s*:(?:\s|$)
+      )
+    )
+  _flow_key_out_lookahead: |-
+    (?x:
+      (?=
+        (?:
+          (?:{{yaml_plain_out}}|{{knap_interpolation}})
+          (?:{{knap_interpolation}}|[^\s:]|:\S|\s+(?![#\s]))*
+        | ".*"
+        | '.*'
+        )\s*:(?:\s|$)
+      )
+    )
+
+contexts:
+  block-scalar-body:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  flow-scalar-plain-in-body:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  flow-scalar-plain-out-body:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  flow-scalar-double-quoted-body:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  flow-scalar-single-quoted-body:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  flow-collection:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  flow-mapping:
+    - match: '\{(?![{%#])'
+      scope: punctuation.definition.mapping.begin.yaml
+      push: flow-mapping-body

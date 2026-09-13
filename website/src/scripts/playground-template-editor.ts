@@ -6,6 +6,7 @@ import { tags } from '@lezer/highlight';
 import { templateCompletions, type TemplateSuggestion } from '../lib/playground-completions';
 import { emptyTemplatePair, pairTemplateInput } from '../lib/playground-pairs';
 import { markdownPunctuationAt } from '../lib/markdown-punctuation';
+import { knapKeyword, knapConstant } from '../lib/knap-syntax';
 import { createPlaygroundEditor } from './playground-editor';
 
 export const templateLanguage = StreamLanguage.define({
@@ -51,7 +52,7 @@ export const templateLanguage = StreamLanguage.define({
     if (stream.match(/\d+(?:\.\d+)?/)) return 'number';
     if (stream.match(/[a-zA-Z_$][\w$]*/)) {
       if (state.filter) { state.filter = false; return 'filter'; }
-      return /^(if|else|elseif|endif|for|in|endfor|set|and|or|not|contains|true|false|null)$/.test(stream.current()) ? 'keyword' : 'variableName';
+      return knapKeyword.test(stream.current()) || knapConstant.test(stream.current()) ? 'keyword' : 'variableName';
     }
     stream.next();
     return 'punctuation';

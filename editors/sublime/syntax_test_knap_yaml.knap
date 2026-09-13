@@ -1,0 +1,46 @@
+# SYNTAX TEST "Packages/Knap/Knap YAML.sublime-syntax"
+
+key: "before {{ value }} after"
+#     ^^^^^^ string.quoted.double.yaml - source.knap
+#               ^^^^^ source.knap variable.other.knap - string - meta.mapping.key.yaml
+#                        ^^^^^ string.quoted.double.yaml - source.knap
+
+key: 'before {{ value }} after'
+#               ^^^^^ source.knap variable.other.knap - string
+#                        ^^^^^ string.quoted.single.yaml - source.knap
+
+key: before {{ value }} after
+#              ^^^^^ variable.other.knap - string
+#                       ^^^^^ string.unquoted.plain.out.yaml - source.knap
+
+key: [{{ value }}, "after"]
+#        ^^^^^ variable.other.knap - string - meta.mapping.yaml
+#                   ^^^^^ string.quoted.double.yaml - source.knap
+
+key: {{ value }}
+next: true
+#     ^^^^ constant.language.boolean.true.yaml - source.knap - string
+
+key: |
+  before {{ value }} after
+# ^^^^^^ string.unquoted.block.yaml
+#           ^^^^^ variable.other.knap - string
+#                    ^^^^^ string.unquoted.block.yaml - source.knap
+
+next: true
+#     ^^^^ constant.language.boolean.true.yaml - source.knap - string
+
+{{ field }}: "after"
+#  ^^^^^ variable.other.knap - string - meta.mapping.key.yaml
+#             ^^^^^ string.quoted.double.yaml - source.knap
+
+key: "before {# {{ ignored }} #} {{ value }} after"
+#                  ^^^^^^^ comment.block.knap - variable.other.knap - string
+#                                   ^^^^^ variable.other.knap - comment - string
+#                                            ^^^^^ string.quoted.double.yaml - source.knap
+
+key: "{{ 'literal {{ nested }}' | upper }} after"
+#                    ^^^^^^ string.quoted.single.knap - variable.other.knap - string.quoted.double.yaml
+#                                 ^^^^^ support.function.filter.knap - string - comment
+#                                          ^^^^^ string.quoted.double.yaml - source.knap
+

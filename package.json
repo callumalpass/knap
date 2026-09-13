@@ -52,11 +52,13 @@
 		}
 	},
 	"scripts": {
+		"editors:build": "node editors/build.mjs",
+		"editors:check": "node editors/build.mjs --check",
 		"build": "tsup",
 		"test": "vitest run",
 		"bench": "vitest bench --run",
 		"typecheck": "tsc --noEmit",
-		"check": "pnpm typecheck && pnpm test && pnpm build",
+		"check": "pnpm editors:check && pnpm typecheck && pnpm test && pnpm build",
 		"prepack": "pnpm check"
 	},
 	"engines": {
@@ -72,9 +74,13 @@
 		"dayjs": "^1.11.23"
 	},
 	"devDependencies": {
+		"@shikijs/langs": "^4.4.3",
 		"@types/node": "^20.19.43",
 		"tsup": "^8.5.1",
 		"typescript": "^5.9.3",
-		"vitest": "^4.1.11"
+		"vitest": "^4.1.11",
+		"vscode-oniguruma": "^2.0.1",
+		"vscode-textmate": "^9.3.2",
+		"yaml": "^2.9.1"
 	}
 }

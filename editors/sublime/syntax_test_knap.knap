@@ -1,0 +1,53 @@
+# SYNTAX TEST "Packages/Knap/Knap.sublime-syntax"
+
+{{ title | upper }}
+#  ^^^^^ variable.other.knap
+#          ^^^^^ support.function.filter.knap
+
+{% if enabled %}
+#  ^^ keyword.control.knap
+
+{% endif %}
+#  ^^^^^ keyword.control.knap
+
+{{ text | highlight:blue }}
+#                   ^^^^ string.unquoted.argument.knap
+
+{{ people | map:item => item.name }}
+#               ^^^^ variable.other.knap
+
+{#
+{{ ignored }}
+#  ^^^^^^^ comment.block.knap - variable.other.knap
+
+#}
+
+# {{ title }}
+#    ^^^^^ variable.other.knap - markup.heading
+
+**before {{ value }} after**
+# ^^^^^^ markup.bold.markdown - source.knap
+#           ^^^^^ variable.other.knap - markup.bold.markdown
+#                    ^^^^^ markup.bold.markdown - source.knap
+
+`before {{ value }} after`
+#^^^^^^ markup.raw.inline.markdown - source.knap
+#          ^^^^^ variable.other.knap - markup.raw.inline.markdown
+#                   ^^^^^ markup.raw.inline.markdown - source.knap
+
+<a href="before {{ value }} after">link</a>
+#        ^^^^^^ string.quoted.double.html - source.knap
+#                  ^^^^^ variable.other.knap - string
+#                           ^^^^^ string.quoted.double.html - source.knap
+
+```javascript
+const message = "before {{ value }} after";
+#                ^^^^^^ string.quoted.double.js - source.knap
+#                          ^^^^^ variable.other.knap - string
+#                                   ^^^^^ string.quoted.double.js - source.knap
+
+```
+
+# Heading
+# ^^^^^^^ markup.heading.1.markdown - source.knap - string
+

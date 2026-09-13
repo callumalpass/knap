@@ -180,6 +180,8 @@ Filters that deliberately preserve their input after invalid runtime data can re
 
 ## Syntax
 
+VS Code and Sublime Text packages are available in [editors/](editors/README.md). They highlight Knap inside Markdown and include template snippets. Use `.knap` or `.knap.md` filenames, or select **Knap Markdown** for an existing template.
+
 The syntax is inspired by Twig and Liquid.
 
 ```liquid

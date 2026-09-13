@@ -1,0 +1,50 @@
+%YAML 1.2
+---
+# Host-specific integration stays separate from the generated Knap grammar.
+name: Knap Markdown host
+scope: text.html.markdown.knap.host
+version: 2
+hidden: true
+extends: Packages/Markdown/Markdown.sublime-syntax
+
+contexts:
+  prototype:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+
+  code-span-body:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+
+  html-content:
+    - include: scope:text.html.knap
+
+  fenced-javascript:
+    - match: '(?x){{fenced_code_block_start}}(?i:\s*(javascript|js|node)){{fenced_code_block_trailing_infostring_characters}}'
+      captures:
+        0: meta.code-fence.definition.begin.markdown-gfm
+        2: punctuation.definition.raw.code-fence.begin.markdown
+        5: constant.other.language-name.markdown
+        6: comment.line.infostring.markdown
+        7: meta.fold.code-fence.begin.markdown
+      embed: scope:source.js.knap
+      embed_scope: meta.code-fence.body.markdown-gfm markup.raw.code-fence.javascript.markdown-gfm source.js
+      escape: '{{fenced_code_block_escape}}'
+      escape_captures:
+        0: meta.code-fence.definition.end.markdown-gfm
+        1: punctuation.definition.raw.code-fence.end.markdown
+        2: meta.fold.code-fence.end.markdown
+
+  frontmatter:
+    - meta_prepend: true
+    - match: '^(---)[ \t]*(?i:(yaml|yml)[ \t]*)?$\n?'
+      captures:
+        0: meta.frontmatter.markdown
+        1: punctuation.section.frontmatter.begin.markdown
+        2: constant.other.language-name.markdown
+      embed: scope:source.yaml.knap
+      embed_scope: meta.frontmatter.markdown source.yaml.embedded.markdown
+      escape: '^(---|\.{3})[ \t]*$\n?'
+      escape_captures:
+        0: meta.frontmatter.markdown
+        1: punctuation.section.frontmatter.end.markdown

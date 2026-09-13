@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add VS Code and Sublime Text syntax packages for Knap Markdown, with shared generated grammars, template comments, and snippets.
+
 ## 0.4.2
 
 - Add `{# ... #}` template comments, including multiline comments, with syntax errors for unclosed comments.

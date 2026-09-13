@@ -1,0 +1,24 @@
+%YAML 1.2
+---
+name: Knap HTML host
+scope: text.html.knap
+version: 2
+hidden: true
+extends: Packages/HTML/HTML.sublime-syntax
+
+contexts:
+  prototype:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  tag-attribute-value-content:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  tag-href-attribute-value-content:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  tag-class-attribute-value-content:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  tag-id-attribute-value-content:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags

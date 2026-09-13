@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[{% for ${1:item} in ${2:items} %}
+- {{ ${1:item} }}$0
+{% endfor %}]]></content>
+  <tabTrigger>knap-for</tabTrigger>
+  <scope>(text.html.markdown.knap | source.knap) - comment - string</scope>
+  <description>Loop over a collection</description>
+</snippet>

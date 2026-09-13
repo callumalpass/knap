@@ -1,0 +1,29 @@
+{
+  "name": "knap",
+  "displayName": "Knap",
+  "description": "Knap template syntax highlighting and snippets for Markdown.",
+  "version": "0.1.0",
+  "publisher": "obsidianmd",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/obsidianmd/knap", "directory": "editors/vscode" },
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Snippets"],
+  "keywords": ["knap", "markdown", "template", "obsidian"],
+  "contributes": {
+    "languages": [{
+      "id": "knap",
+      "aliases": ["Knap Markdown", "Knap", "knap"],
+      "extensions": [".knap", ".knap.md"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [
+      { "scopeName": "source.knap", "path": "./syntaxes/knap.tmLanguage.json" },
+      {
+        "language": "knap",
+        "scopeName": "text.html.markdown.knap",
+        "path": "./syntaxes/knap-markdown.tmLanguage.json"
+      }
+    ],
+    "snippets": [{ "language": "knap", "path": "./snippets/knap.json" }]
+  }
+}

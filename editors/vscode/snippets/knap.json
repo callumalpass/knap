@@ -1,0 +1,37 @@
+{
+  "Output a variable": {
+    "prefix": "knap-var",
+    "body": "{{ ${1:title} }}",
+    "description": "Output a value"
+  },
+  "Apply a filter": {
+    "prefix": "knap-filter",
+    "body": "{{ ${1:title} | ${2:upper} }}",
+    "description": "Output a filtered value"
+  },
+  "Conditional block": {
+    "prefix": "knap-if",
+    "body": "{% if ${1:condition} %}\n$0\n{% endif %}",
+    "description": "Conditional block"
+  },
+  "Conditional with fallback": {
+    "prefix": "knap-ifelse",
+    "body": "{% if ${1:condition} %}\n\t${2}\n{% else %}\n\t$0\n{% endif %}",
+    "description": "Conditional block with fallback"
+  },
+  "Loop": {
+    "prefix": "knap-for",
+    "body": "{% for ${1:item} in ${2:items} %}\n- {{ ${1:item} }}$0\n{% endfor %}",
+    "description": "Loop over a collection"
+  },
+  "Set a variable": {
+    "prefix": "knap-set",
+    "body": "{% set ${1:name} = ${2:value} %}$0",
+    "description": "Assign a local variable"
+  },
+  "Template comment": {
+    "prefix": "knap-comment",
+    "body": "{# ${1:comment} #}$0",
+    "description": "Comment removed from rendered output"
+  }
+}

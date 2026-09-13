@@ -1,0 +1,5 @@
+{
+	"tags": ["if", "elseif", "else", "endif", "for", "in", "endfor", "set"],
+	"wordOperators": ["and", "or", "not", "contains"],
+	"constants": ["true", "false", "null"]
+}

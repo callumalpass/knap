@@ -1,0 +1,15 @@
+%YAML 1.2
+---
+name: Knap JavaScript host
+scope: source.js.knap
+version: 2
+hidden: true
+extends: Packages/JavaScript/JavaScript.sublime-syntax
+
+contexts:
+  prototype:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags
+  string-content:
+    - meta_prepend: true
+    - include: Knap Expressions.sublime-syntax#tags

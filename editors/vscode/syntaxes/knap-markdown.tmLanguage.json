@@ -1,0 +1,48 @@
+{
+  "name": "Knap Markdown",
+  "scopeName": "text.html.markdown.knap",
+  "patterns": [
+    {
+      "include": "source.knap"
+    },
+    {
+      "include": "text.html.markdown"
+    }
+  ],
+  "injections": {
+    "L:text.html.markdown.knap - meta.embedded.inline.knap - meta.embedded.block.knap - comment.block.knap": {
+      "patterns": [
+        {
+          "include": "source.knap"
+        }
+      ]
+    },
+    "L:text.html.markdown.knap - meta.embedded - comment - string - markup.inline.raw - markup.fenced_code - meta.tag": {
+      "patterns": [
+        {
+          "include": "text.html.markdown#fenced_code_block"
+        },
+        {
+          "name": "markup.inline.raw.string.markdown",
+          "begin": "(`+)",
+          "end": "(?<!`)\\1(?!`)",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.raw.markdown"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.raw.markdown"
+            }
+          },
+          "patterns": [
+            {
+              "include": "source.knap"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

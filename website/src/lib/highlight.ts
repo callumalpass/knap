@@ -1,5 +1,6 @@
 import { maxHighlightLineLength } from './playground-limits';
 import { markdownPunctuationAt } from './markdown-punctuation';
+import { knapKeyword, knapConstant } from './knap-syntax';
 
 export type CodeLanguage = 'knap' | 'ts' | 'shell' | 'md' | 'json';
 
@@ -20,8 +21,8 @@ function tokenClass(token: string, language: CodeLanguage) {
   if (/^['"`]/.test(token)) return 'syn-string';
   if (/^\d/.test(token)) return 'syn-number';
   if (language === 'ts' && /^(import|from)$/.test(token)) return 'syn-import';
-  if (/^(true|false|null|undefined)$/.test(token)) return 'syn-constant';
-  if (/^(if|elseif|else|endif|for|in|endfor|set|and|or|not|contains)$/.test(token)) return 'syn-keyword';
+  if (knapConstant.test(token) || token === 'undefined') return 'syn-constant';
+  if (knapKeyword.test(token)) return 'syn-keyword';
   if (language === 'ts' && /^(const|let|type|async|await|return|new|throw|export)$/.test(token)) return 'syn-keyword';
   if (/^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*$/.test(token)) return 'syn-variable';
   return undefined;
