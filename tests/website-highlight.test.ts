@@ -192,4 +192,18 @@ describe('website syntax highlighting', () => {
 		expect(highlightLine('{{ people | map:item => item.name }}', 'knap'))
 			.toContain('<span class="syn-variable">item</span>');
 	});
+
+	test('keeps chained filters after adjacent nested-object braces', () => {
+		const html = highlightLine('{{ x | map:i => ({a: {b: i}}) | first }}', 'knap');
+		expect(html).toContain('<span class="syn-filter">first</span>');
+	});
+
+	test('keeps chained filters after quoted arguments', () => {
+		const html = highlightLine('{{ date | date:"YYYY-MM-DD" | upper }}', 'knap');
+		expect(html).toContain('<span class="syn-filter">upper</span>');
+	});
+
+	test('returns to unstyled Markdown after an output tag', () => {
+		expect(highlightLine('{{ title }} after }', 'knap')).toMatch(/<span class="syn-punctuation">}<\/span><span class="syn-punctuation">}<\/span> after }$/);
+	});
 });

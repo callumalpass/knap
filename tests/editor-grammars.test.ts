@@ -123,6 +123,16 @@ describe('Knap editor grammar', () => {
     expect(tokens(source).at(-1)!.scopes).toContain('punctuation.section.embedded.end.knap');
   });
 
+  test('adjacent nested-object braces do not close the output tag', () => {
+    const source = '{{ x | map:i => ({a: {b: i}}) | first }}';
+    has(source, 'first', 'support.function.filter.knap');
+    expect(tokens(source).at(-1)!.scopes).toContain('punctuation.section.embedded.end.knap');
+  });
+
+  test('filter chains resume after quoted arguments', () => {
+    has('{{ date | date:"YYYY-MM-DD" | upper }}', 'upper', 'support.function.filter.knap');
+  });
+
   test('recovers from unfinished expressions at the next opener', () => {
     has('{{ broken | sort:(\n{{ title | upper }}', 'upper', 'support.function.filter.knap');
     has('{% if missing\n{% set title = "Hi" %}', 'set', 'keyword.control.knap');

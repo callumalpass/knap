@@ -146,20 +146,41 @@ function highlightShellLine(line: string, state = shellHighlightState()) {
 }
 
 function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md' | 'shell'>, constrainKnapToTags = true) {
-  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d(?:_?\d)*(?:\.\d(?:_?\d)*)?\b|[A-Za-z_$][\w$]*)/g;
+  const pattern = /(\{\{|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d(?:_?\d)*(?:\.\d(?:_?\d)*)?\b|[A-Za-z_$][\w$]*)/g;
   const tokens = line.split(pattern).filter(Boolean);
   let expectsFilter = false;
   let inKnapExpression = false;
   let currentFilter: string | undefined;
   let inFilterArguments = false;
+  const groups: string[] = [];
+  let outputTag = false;
+  let outputCloseBrace = false;
 
   return tokens.map((token, index) => {
     let className = tokenClass(token, language);
 
     if (language === 'knap' && constrainKnapToTags) {
-      if (/^(\{\{|\{%)$/.test(token)) inKnapExpression = true;
-      else if (/^(\}\}|%\})$/.test(token)) inKnapExpression = false;
-      else if (!inKnapExpression) className = undefined;
+      if (/^(\{\{|\{%)$/.test(token)) {
+        inKnapExpression = true;
+        outputTag = token === '{{';
+        outputCloseBrace = false;
+        groups.length = 0;
+      }
+      else if (token === '}' && outputTag && inKnapExpression) {
+        if (groups.at(-1) === '}') groups.pop();
+        else if (outputCloseBrace) {
+          inKnapExpression = false;
+          outputTag = false;
+          outputCloseBrace = false;
+        } else outputCloseBrace = true;
+      }
+      else if (token === '%}' && groups.length === 0) inKnapExpression = false;
+      else {
+        outputCloseBrace = false;
+        if (/^[([{]$/.test(token)) groups.push(token === '(' ? ')' : token === '[' ? ']' : '}');
+        else if (groups.at(-1) === token) groups.pop();
+        else if (!inKnapExpression) className = undefined;
+      }
     }
 
     if (token === '|' && language === 'knap' && inKnapExpression) {
@@ -219,15 +240,40 @@ export function renderInlineCode(value: string): string {
 }
 
 function highlightKnapLine(line: string) {
-  return line.split(/(\{\{.*?\}\}|\{%.*?%\}|(?:\{\{|\{%).*?$)/g).filter(Boolean).map((segment) =>
-    /^(?:\{\{|\{%)/.test(segment)
-      ? highlightTokenLine(segment, 'knap')
-      : highlightMarkdownLine(segment)
-  ).join('');
+  let output = '';
+  let start = 0;
+  while (start < line.length) {
+    const outputStart = line.indexOf('{{', start);
+    const logicStart = line.indexOf('{%', start);
+    const tagStart = outputStart < 0 ? logicStart : logicStart < 0 ? outputStart : Math.min(outputStart, logicStart);
+    if (tagStart < 0) return output + highlightMarkdownLine(line.slice(start));
+    output += highlightMarkdownLine(line.slice(start, tagStart));
+    const close = line[tagStart + 1] === '{' ? '}}' : '%}';
+    const groups: string[] = [];
+    let quote = '';
+    let index = tagStart + 2;
+    for (; index < line.length;) {
+      if (quote) {
+        if (line[index] === '\\') index += 2;
+        else { if (line[index] === quote) quote = ''; index++; }
+      } else if (groups.length === 0 && line.startsWith(close, index)) {
+        index += close.length;
+        break;
+      } else {
+        const char = line[index++];
+        if (char === '"' || char === "'") quote = char;
+        else if (/^[([{]$/.test(char)) groups.push(char === '(' ? ')' : char === '[' ? ']' : '}');
+        else if (groups.at(-1) === char) groups.pop();
+      }
+    }
+    output += highlightTokenLine(line.slice(tagStart, index), 'knap');
+    start = index;
+  }
+  return output;
 }
 
-interface KnapHighlightState { comment: boolean; close: string; quote: string }
-const knapHighlightState = (): KnapHighlightState => ({ comment: false, close: '', quote: '' });
+interface KnapHighlightState { comment: boolean; close: string; quote: string; groups: string[] }
+const knapHighlightState = (): KnapHighlightState => ({ comment: false, close: '', quote: '', groups: [] });
 
 function highlightKnapComments(line: string, state = knapHighlightState()): string {
   let output = '';
@@ -247,9 +293,12 @@ function highlightKnapComments(line: string, state = knapHighlightState()): stri
         index++;
       }
     } else if (state.close) {
-      if (line.startsWith(state.close, index)) { state.close = ''; index += 2; }
+      if (state.groups.length === 0 && line.startsWith(state.close, index)) { state.close = ''; index += 2; }
       else {
-        if (line[index] === '"' || line[index] === "'") state.quote = line[index];
+        const char = line[index];
+        if (char === '"' || char === "'") state.quote = char;
+        else if (/^[([{]$/.test(char)) state.groups.push(char === '(' ? ')' : char === '[' ? ']' : '}');
+        else if (state.groups.at(-1) === char) state.groups.pop();
         index++;
       }
     } else if (line.startsWith('{#', index)) {
@@ -259,6 +308,7 @@ function highlightKnapComments(line: string, state = knapHighlightState()): stri
       state.comment = true;
     } else if (line.startsWith('{{', index) || line.startsWith('{%', index)) {
       state.close = line[index + 1] === '{' ? '}}' : '%}';
+      state.groups = [];
       index += 2;
     } else index++;
   }

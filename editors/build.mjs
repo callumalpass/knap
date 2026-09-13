@@ -1,6 +1,6 @@
 // The website's token categories and filter-argument conventions are the basis
 // for these grammars. Keep editor-specific state machines out of the runtime.
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { stringify } from 'yaml';
@@ -11,7 +11,7 @@ const check = process.argv.includes('--check');
 function output(path, contents) {
   const file = fileURLToPath(new URL(path, root));
   if (check) {
-    if (readFileSync(file, 'utf8') !== contents) throw new Error(`${path} is stale. Run pnpm editors:build.`);
+    if (!existsSync(file) || readFileSync(file, 'utf8') !== contents) throw new Error(`${path} is stale. Run pnpm editors:build.`);
   } else {
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, contents);

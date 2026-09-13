@@ -1,10 +1,10 @@
 import { constants, identifier, keywords, number, operator, wordOperators } from './highlighting/rules';
 
 export interface Mode {
-	scope?: string;
+	scope?: string | Record<number, string>;
 	begin?: string | RegExp | RegExp[];
 	end?: string | RegExp;
-	match?: RegExp;
+	match?: RegExp | RegExp[];
 	beginScope?: string | Record<number, string>;
 	endScope?: string;
 	contains?: Mode[];
@@ -31,6 +31,11 @@ export function knap(): Language {
 		{ scope: 'operator', match: operator, relevance: 0 },
 		{ scope: 'punctuation', match: /[.,:]/, relevance: 0 },
 	];
+	// A pipe ends a filter argument mode. Keeping it out of the child operator
+	// matcher lets the parent mode see it and start the next filter.
+	const argumentAtoms = atoms.map(mode => mode.match === operator
+		? { ...mode, match: /=>|==|!=|>=|<=|&&|\|\||\?\?|[=<>!+*/-]/ }
+		: mode);
 	const expression: Mode[] = [];
 	const args: Mode[] = [];
 	const boundary = /(?=\|(?!\|)|\)|-?\}\}|-?%\}|\{[{%])/;
@@ -40,7 +45,7 @@ export function knap(): Language {
 	});
 	args.push(...strings, group(/\(/, /\)/, args),
 		{ scope: 'string', match: new RegExp(`\\.\\s*${identifier}`), relevance: 0 },
-		...atoms, { scope: 'string', match: new RegExp(identifier), relevance: 0 });
+		...argumentAtoms, { scope: 'string', match: new RegExp(identifier), relevance: 0 });
 	expression.push(...strings,
 		{ scope: 'operator', match: /\|\|/, relevance: 0 },
 		{
@@ -48,11 +53,13 @@ export function knap(): Language {
 			end: boundary, contains: expression, relevance: 0,
 		},
 		{
-			begin: /\|(?!\|)/, beginScope: 'operator', end: boundary, relevance: 0,
-			contains: [
-				{ begin: /:/, beginScope: 'punctuation', end: boundary, contains: args, relevance: 0 },
-				{ scope: 'title.function', match: new RegExp(identifier), relevance: 0 },
-			],
+			begin: [/\|(?!\|)/, /\s*/, new RegExp(`(?!map\\b)${identifier}`), /\s*/, /:/],
+			beginScope: { 1: 'operator', 3: 'title.function', 5: 'punctuation' },
+			end: boundary, contains: args, relevance: 0,
+		},
+		{
+			match: [/\|(?!\|)/, /\s*/, new RegExp(identifier)],
+			scope: { 1: 'operator', 3: 'title.function' }, relevance: 0,
 		},
 		group(/\(/, /\)/, expression), group(/\[/, /\]/, expression), group(/\{(?![{%#])/, /\}/, expression),
 		...atoms, { scope: 'variable', match: new RegExp(identifier), relevance: 0 });

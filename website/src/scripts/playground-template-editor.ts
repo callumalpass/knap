@@ -26,12 +26,19 @@ export const templateLanguage = StreamLanguage.define({
     }
     return knapStreamParser.token(stream, state);
   },
-  tokenTable: {
-    'variable-2': tags.function(tags.variableName),
-    property: tags.variableName,
-    atom: tags.keyword,
-  },
 });
+
+export const templateHighlightStyle = HighlightStyle.define([
+  { tag: tags.variableName, class: 'syn-variable' },
+  { tag: tags.propertyName, class: 'syn-variable' },
+  { tag: tags.special(tags.variableName), class: 'syn-filter' },
+  { tag: tags.keyword, class: 'syn-keyword' },
+  { tag: tags.atom, class: 'syn-keyword' },
+  { tag: tags.string, class: 'syn-string' },
+  { tag: tags.number, class: 'syn-number' },
+  { tag: tags.comment, class: 'syn-comment' },
+  { tag: [tags.punctuation, tags.operator], class: 'syn-punctuation' },
+]);
 
 export function createTemplateEditor(variables: () => Record<string, unknown>, wrap = false) {
   const filters: TemplateSuggestion[] = JSON.parse(document.getElementById('playground-filter-completions')!.textContent!);
@@ -49,15 +56,7 @@ export function createTemplateEditor(variables: () => Record<string, unknown>, w
       });
       return true;
     }),
-    syntaxHighlighting(HighlightStyle.define([
-      { tag: tags.variableName, class: 'syn-variable' },
-      { tag: tags.function(tags.variableName), class: 'syn-filter' },
-      { tag: tags.keyword, class: 'syn-keyword' },
-      { tag: tags.string, class: 'syn-string' },
-      { tag: tags.number, class: 'syn-number' },
-      { tag: tags.comment, class: 'syn-comment' },
-      { tag: [tags.punctuation, tags.operator], class: 'syn-punctuation' },
-    ])),
+    syntaxHighlighting(templateHighlightStyle),
     autocompletion({
       icons: false,
       optionClass: (completion) => {

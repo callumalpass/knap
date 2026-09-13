@@ -13,6 +13,11 @@ export interface GrammarToken {
 }
 
 const string = { pattern: new RegExp(quoted), greedy: true };
+const balancedBraces = (depth: number): string => depth === 0
+	? String.raw`\{[^{}]*\}`
+	: String.raw`\{(?:${quoted}|${balancedBraces(depth - 1)}|[^{}"'])*\}`;
+const nestedObject = balancedBraces(7);
+const loneBrace = String.raw`\{(?![{%])|\}(?!\})`;
 const wordToken = (pattern: RegExp): GrammarToken => ({
 	pattern: new RegExp(`(^|[^\\w$])(?:${pattern.source})(?![\\w$])`),
 	lookbehind: true,
@@ -31,22 +36,35 @@ const argumentsGrammar: Grammar = {
 	property: { pattern: new RegExp(`(\\.)\\s*${identifier}`), lookbehind: true, alias: 'string' },
 	'bare-argument': { pattern: new RegExp(identifier), alias: 'string' },
 };
+const filterInside: Grammar = {
+	operator: /^\|/,
+	function: new RegExp(`${identifier}$`),
+};
+const filter: GrammarToken = {
+	pattern: new RegExp(`\\|(?!\\|)\\s*${identifier}`),
+	inside: filterInside,
+};
+const expressionBody = (end: string) => String.raw`(?:${quoted}|${nestedObject}|${loneBrace}|(?!${end}|\{[{%])[^{}"'])*`;
 
 /** Prism 1 grammar for Knap tags in plain template text. */
 export const knap: Grammar = {
 	knap: {
 		// One ordered alternation keeps comments and quoted delimiters isolated.
-		pattern: new RegExp(String.raw`\{#[\s\S]*?(?:#\}|$)|\{\{-?(?:${quoted}|(?!-?\}\}|\{[{%])[^"'])*(?:-?\}\}|(?=\{[{%])|$)|\{%-?(?:${quoted}|(?!-?%\}|\{[{%])[^"'])*(?:-?%\}|(?=\{[{%])|$)`),
+		pattern: new RegExp(String.raw`\{#[\s\S]*?(?:#\}|$)|\{\{-?${expressionBody('-?\\}\\}')}(?:-?\}\}|(?=\{[{%])|$)|\{%-?${expressionBody('-?%\\}')}(?:-?%\}|(?=\{[{%])|$)`),
 		greedy: true,
 		inside: {
 			comment: /^\{#[\s\S]*/,
-			'filter-arguments': {
-				pattern: new RegExp(String.raw`((?:^|[^|])\|(?!\|)\s*(?!map\b)${identifier}\s*:)(${quoted}|(?!\|(?!\|)|-?\}\}|-?%\}|\{[{%])[^"'])*`),
-				lookbehind: true,
+			'boolean-or': { pattern: /\|\|/, alias: 'operator' },
+			'filter-with-arguments': {
+				pattern: new RegExp(String.raw`\|(?!\|)\s*(?!map\b)${identifier}\s*:(?:${quoted}|(?!\|(?!\|)|-?\}\}|-?%\}|\{[{%])[^"'])*`),
 				greedy: true,
-				inside: argumentsGrammar,
+				inside: {
+					filter,
+					punctuation: /:/,
+					...argumentsGrammar,
+				},
 			},
-			function: { pattern: new RegExp(`((?:^|[^|])\\|(?!\\|)\\s*)${identifier}`), lookbehind: true },
+			filter,
 			'delimiter': { pattern: /^\{[{%]-?|-?[}%]\}$/, alias: 'punctuation' },
 			...atoms,
 			variable: new RegExp(identifier),

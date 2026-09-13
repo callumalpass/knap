@@ -1,4 +1,4 @@
-import syntax from './language-syntax.json';
+import { constantNames, tagNames, wordOperatorNames } from './highlighting/rules';
 
 type Filter = '' | 'name' | 'args' | 'map';
 export interface KnapState {
@@ -15,9 +15,9 @@ export interface KnapStream {
 	pos: number;
 }
 
-const keywords = new Set(syntax.tags);
-const operators = new Set(syntax.wordOperators);
-const constants = new Set(syntax.constants);
+const keywords = new Set(tagNames);
+const operators = new Set(wordOperatorNames);
+const constants = new Set(constantNames);
 const word = /[A-Za-z_$][\w$]*/y;
 const number = /-?\d+(?:\.\d+)?\b/y;
 const symbol = /=>|==|!=|>=|<=|&&|\|\||\?\?|[=<>!+*/-]/y;
@@ -66,7 +66,7 @@ export const knapStreamParser = {
 			do { stream.pos++; } while (stream.pos < source.length && !starts('{{') && !starts('{%') && !starts('{#'));
 			return null;
 		}
-		if (!state.quote && (starts(state.close) || starts('-' + state.close))) {
+		if (!state.quote && state.groups.length === 0 && (starts(state.close) || starts('-' + state.close))) {
 			stream.pos += state.close.length + (source[stream.pos] === '-' ? 1 : 0);
 			state.close = ''; state.filter = ''; state.filterName = ''; state.groups = [];
 			return 'punctuation';
@@ -83,6 +83,9 @@ export const knapStreamParser = {
 		if (/\s/.test(source[stream.pos])) {
 			do { stream.pos++; } while (stream.pos < source.length && /\s/.test(source[stream.pos]));
 			return null;
+		}
+		if (state.filter === 'name' && state.filterName && !starts(':')) {
+			state.filter = ''; state.filterName = '';
 		}
 		if (starts('||')) { stream.pos += 2; return 'operator'; }
 		if (starts('|')) { stream.pos++; state.filter = 'name'; state.filterName = ''; return 'operator'; }

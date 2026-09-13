@@ -22,20 +22,14 @@ In Obsidian, register the grammar in the `after` callback of `prismLoadable` in 
 
 ```ts
 import { StreamLanguage } from '@codemirror/language';
-import { tags } from '@lezer/highlight';
 import { knapStreamParser } from 'knap/codemirror';
 
-const knapLanguage = StreamLanguage.define({
-  ...knapStreamParser,
-  tokenTable: {
-    'variable-2': tags.function(tags.variableName),
-  },
-});
+const knapLanguage = StreamLanguage.define(knapStreamParser);
 
 // Include knapLanguage in your EditorState extensions.
 ```
 
-The parser uses the CodeMirror 5 token names that CodeMirror 6 already understands: `variable`, `variable-2` for filters, `property`, `keyword`, `operator`, `atom`, `number`, `string`, `comment`, and `punctuation`. The optional `tokenTable` above assigns filters a function tag. Comment delimiters and independent copies of multiline parser state are included. Knap's website uses this same parser with its existing theme and Markdown punctuation styling.
+The parser uses the CodeMirror 5 token names that CodeMirror 6 already understands: `variable`, `variable-2` for filters, `property`, `keyword`, `operator`, `atom`, `number`, `string`, `comment`, and `punctuation`. In CodeMirror 6, `variable-2` maps to `tags.special(tags.variableName)` and `property` maps to `tags.propertyName`; include those tags in a custom `HighlightStyle` when assigning explicit colors. Comment delimiters and independent copies of multiline parser state are included. Knap's website uses this same parser with its existing theme and Markdown punctuation styling.
 
 ## CodeMirror 5 and Obsidian's HyperMD integration
 

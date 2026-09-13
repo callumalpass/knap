@@ -9,6 +9,7 @@ import { classHighlighter, highlightTree } from '@lezer/highlight';
 import { knap as prismGrammar, registerKnap as registerPrism } from '../src/prism';
 import highlightjs from '../src/highlightjs';
 import { knapStreamParser, registerKnap as registerCodeMirror } from '../src/codemirror';
+import { templateHighlightStyle, templateLanguage } from '../website/src/scripts/playground-template-editor';
 
 registerPrism(Prism);
 hljs.registerLanguage('knap', highlightjs);
@@ -67,8 +68,11 @@ const cases = [
 	['{{ $if }}', '$if', 'variable'],
 	['{{ if$ }}', 'if$', 'variable'],
 	['{{ title | trim }}', 'trim', 'filter'],
+	['{{ title|trim }}', 'title', 'variable'],
+	['{{ date | date:"YYYY-MM-DD" | upper }}', 'upper', 'filter'],
 	['{{ title |\n upper }}', 'upper', 'filter'],
 	['{{ summary ?? "No summary" }}', '??', 'operator'],
+	['{{ title | trim ?? true }}', 'true', 'constant'],
 	['{% if a || b %}', '||', 'operator'],
 	['{% if a || b %}', 'b', 'variable'],
 	['{% if a and b %}', 'and', 'operator'],
@@ -82,6 +86,8 @@ const cases = [
 	['{{ text | truncatewords:(20, "…") }}', '…', 'string'],
 	['{{ people | map:item => item.name }}', 'item', 'variable'],
 	['{{ people | map:item => ({name: item.name, flags: [true, false]}) | first }}', 'first', 'filter'],
+	['{{ x | map:i => ({a: {b: i}}) | first }}', 'first', 'filter'],
+	['{{ value } | upper }}', 'upper', 'filter'],
 	['{{ people | map:item => (item.name | upper) | first }}', 'upper', 'filter'],
 	['{#\n{{ ignored }} {% if true %} {#\n#}{{ title }}', 'ignored', 'comment'],
 	['{#\n{{ ignored }} {% if true %} {#\n#}{{ title }}', 'title', 'variable'],
@@ -159,6 +165,17 @@ test('CodeMirror state copies isolate incremental branches, including nested fil
 	expect(copy.close).toBe('');
 	expect(state.quote).toBe('"');
 	expect(state.groups).toHaveLength(1);
+});
+
+test('the playground theme distinguishes filters and retains property and constant styling', () => {
+	const source = '{{ author.name | trim ?? true }}';
+	const spans: Span[] = [];
+	highlightTree(templateLanguage.parser.parse(source), templateHighlightStyle, (from, to, classes) => {
+		spans.push({ text: source.slice(from, to), classes: classes.split(' ') });
+	});
+	expect(spans.find(span => span.text === '.name')?.classes).toContain('syn-variable');
+	expect(spans.find(span => span.text === 'trim')?.classes).toContain('syn-filter');
+	expect(spans.find(span => span.text === 'true')?.classes).toContain('syn-keyword');
 });
 
 test('CodeMirror 5 selects Knap inside Markdown fences and resumes Markdown afterward', () => {
