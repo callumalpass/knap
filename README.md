@@ -429,6 +429,10 @@ pnpm install
 pnpm check
 ```
 
+The [portable rendering fixtures](compat/fixtures/README.md) make selected
+documentation examples and regression expectations reusable by implementations
+in other languages.
+
 Knap is available under the [MIT License](LICENSE).
 
 
