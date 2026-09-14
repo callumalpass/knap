@@ -72,7 +72,7 @@ directors:
     markdown: `---
 author: "[[E. M. Forster]]"
 year: 1909
-isbn: 9781409903291
+isbn: "9781409903291"
 genres:
   - "Sci-fi"
 source: "https://stephango.com/the-machine-stops"

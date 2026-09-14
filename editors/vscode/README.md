@@ -2,6 +2,8 @@
 
 Syntax highlighting and snippets for [Knap](https://github.com/obsidianmd/knap), a template language for creating Markdown.
 
+Download `knap.vsix` from the [latest Knap release](https://github.com/obsidianmd/knap/releases/latest), then choose **Extensions: Install from VSIX** from the command palette.
+
 Use `.knap` for Knap templates. The extension also recognizes `.knap.md`, or you can select **Knap Markdown** as the language mode for an existing template. Markdown formatting is preserved around expressions:
 
 ```knap

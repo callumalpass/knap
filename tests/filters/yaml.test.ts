@@ -5,12 +5,14 @@ import { yaml } from '../../src/filters/yaml';
 
 describe('yaml filter', () => {
 	test.each([
-		['42', '42'],
-		['-12.5', '-12.5'],
-		['true', 'true'],
-		['FALSE', 'FALSE'],
-		['null', 'null'],
-	])('preserves the canonical scalar %j', (input, expected) => {
+		['42', '"42"'],
+		['-12.5', '"-12.5"'],
+		['true', '"true"'],
+		['FALSE', '"FALSE"'],
+		['null', '"null"'],
+		['Null', '"Null"'],
+		[' null ', '" null "'],
+	])('quotes the scalar string %j', (input, expected) => {
 		expect(yaml(input)).toBe(expected);
 	});
 
@@ -36,7 +38,27 @@ describe('yaml filter', () => {
 		);
 
 		expect(result.errors).toHaveLength(0);
-		expect(result.output).toBe('Name: "A: value #1"\nCount: 42\nZip: "007"');
+		expect(result.output).toBe('Name: "A: value #1"\nCount: "42"\nZip: "007"');
+	});
+
+	test('preserves typed scalars and supports explicit JSON coercion', async () => {
+		const engine = createEngine({ filters: standardFilters });
+		await expect(engine.renderOrThrow([
+			'number: {{ number | yaml }}',
+			'boolean: {{ boolean | yaml }}',
+			'null: {{ nullValue | yaml }}',
+			'parsed: {{ text | parse_json | yaml }}',
+		].join('\n'), { variables: {
+			number: 42,
+			boolean: false,
+			nullValue: null,
+			text: '42',
+		} })).resolves.toBe([
+			'number: 42',
+			'boolean: false',
+			'null: null',
+			'parsed: 42',
+		].join('\n'));
 	});
 
 	test('uses block lists and mappings by default, including nested and empty collections', () => {

@@ -4,6 +4,14 @@ For JavaScript applications, see the [Prism, CodeMirror, and highlight.js integr
 
 Knap Markdown highlights Knap expressions alongside the editor's built-in Markdown syntax. Use `.knap` for Knap templates. The packages also recognize the legacy-compatible `.knap.md` suffix, and existing `.md` templates can use the syntax by selecting **Knap Markdown** manually. Installing the package does not change the language of ordinary Markdown files.
 
+## Install
+
+- **VS Code and Cursor:** Download `knap.vsix` from the [latest release](https://github.com/obsidianmd/knap/releases/latest), then choose **Extensions: Install from VSIX** from the command palette.
+- **Sublime Text 4:** Download `Knap.sublime-package` from the [latest release](https://github.com/obsidianmd/knap/releases/latest) and place it in Sublime Text's `Installed Packages` folder. Open **Preferences → Browse Packages** and go up one directory to find it.
+- **Prism:** Run `npm install knap prismjs`, then follow the [Prism setup](web.md#prism-1).
+- **CodeMirror 6:** Run `npm install knap @codemirror/language`, then follow the [CodeMirror setup](web.md#codemirror-6).
+- **highlight.js:** Run `npm install knap highlight.js`, then follow the [highlight.js setup](web.md#highlightjs-11).
+
 ## VS Code and compatible editors
 
 For local development, launch the editor with this repository's extension folder:
@@ -24,11 +32,11 @@ To associate an existing template folder, add this to workspace settings:
 }
 ```
 
-To build an installable VSIX, run `pnpm editors:build` from the repository root, then run `pnpm dlx @vscode/vsce package` from `editors/vscode`. Install the resulting file with **Extensions: Install from VSIX**. Marketplace publication is a separate maintainer action; the manifest's `obsidianmd` publisher must be verified before publishing.
+To build an installable VSIX locally, run `pnpm editors:build` from the repository root, then run `pnpm dlx @vscode/vsce package` from `editors/vscode`. Tagged releases package the extension automatically. Marketplace publication is a separate maintainer action; the manifest's `obsidianmd` publisher must be verified before publishing.
 
 ## Sublime Text 4
 
-Choose **Preferences → Browse Packages**, create a `Knap` folder there, and copy the contents of `editors/sublime` into it. Open the example template or select **View → Syntax → Knap Markdown** for an existing template.
+For local development, choose **Preferences → Browse Packages**, create a `Knap` folder there, and copy the contents of `editors/sublime` into it. Open the example template or select **View → Syntax → Knap Markdown** for an existing template.
 
 Sublime inherits its built-in Markdown grammar and uses a separate generated Knap expression grammar. Dedicated Markdown, YAML, HTML, and JavaScript adapters highlight templates inside frontmatter, HTML attributes, inline code, and JavaScript fences. Inheritance avoids recursive `with_prototype` expansion across embedded languages. Host scopes are removed temporarily inside Knap tags and restored afterward, so an expression in a quoted YAML value is not colored as YAML string content. A native grammar is necessary because Sublime cannot include TextMate grammars inside native syntax definitions.
 

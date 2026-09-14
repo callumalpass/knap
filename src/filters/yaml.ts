@@ -95,15 +95,13 @@ function collection(value: string, context?: FilterContext): YamlValue[] | { [ke
 }
 
 function scalar(value: string, context?: FilterContext): string {
-	if (context?.rawValue === null) return 'null';
-
-	const trimmed = value.trim();
-	if (/^(?:true|false|null)$/iu.test(trimmed)) return trimmed;
-
-	// Preserve only canonical finite numbers. Quote strings YAML could
-	// reinterpret, such as 007, 0x1F, or 1e5.
-	const number = Number(trimmed);
-	if (Number.isFinite(number) && String(number) === trimmed) return trimmed;
+	// The filter argument is always text, so use the current typed value to
+	// distinguish actual YAML primitives from strings that resemble them.
+	const rawValue = context?.rawValue;
+	if (rawValue === null || typeof rawValue === 'boolean' ||
+		(typeof rawValue === 'number' && Number.isFinite(rawValue))) {
+		return flow(rawValue);
+	}
 
 	// JSON strings are valid YAML double-quoted scalars.
 	return flow(value);

@@ -21,6 +21,51 @@ describe('yaml_property filter', () => {
 		})).resolves.toBe(expected);
 	});
 
+	test.each([
+		['null', 'page: "null"'],
+		['Null', 'page: "Null"'],
+		['TRUE', 'page: "TRUE"'],
+		['false', 'page: "false"'],
+		['123', 'page: "123"'],
+		['1.5', 'page: "1.5"'],
+		[' null ', 'page: " null "'],
+	])('preserves the scalar string %j', async (value, expected) => {
+		await expect(engine.renderOrThrow('{{ value | yaml_property:"page" }}', {
+			variables: { value },
+		})).resolves.toBe(expected);
+	});
+
+	test('preserves the typed value returned by preceding filters', () => {
+		expect(applyFiltersWithRegistry(
+			[2, 3], 'sum | yaml_property:"sum"', standardFilters, { variables: {} },
+		)).toBe('sum: 5');
+		expect(applyFiltersWithRegistry(
+			42.567, 'round:2 | yaml_property:"price"', standardFilters, { variables: {} },
+		)).toBe('price: 42.57');
+		expect(applyFiltersWithRegistry(
+			[2, 3], 'length | yaml_property:"count"', standardFilters, { variables: {} },
+		)).toBe('count: 2');
+		expect(applyFiltersWithRegistry(
+			1234.5, 'number_format:2 | yaml_property:"display"', standardFilters, { variables: {} },
+		)).toBe('display: "1,234.50"');
+	});
+
+	test('preserves computed types through assignments', async () => {
+		await expect(engine.renderOrThrow(
+			'{% set p = price | round:2 %}{{ p | yaml_property:"price" }}',
+			{ variables: { price: 42.567 } },
+		)).resolves.toBe('price: 42.57');
+	});
+
+	test('preserves selected primitive types through YAML serialization', async () => {
+		await expect(engine.renderOrThrow('{{ items | first | yaml_property:"v" }}', {
+			variables: { items: [42] },
+		})).resolves.toBe('v: 42');
+		await expect(engine.renderOrThrow('{{ items | first | yaml_property:"v" }}', {
+			variables: { items: ['42'] },
+		})).resolves.toBe('v: "42"');
+	});
+
 	test('nests arrays and objects with two-space indentation', async () => {
 		const value = { year: 1999, genres: ['Action', 'Sci-fi'], cast: [{ name: 'Keanu', roles: ['Neo'] }] };
 		await expect(engine.renderOrThrow('{{ value | yaml_property:"movie" }}', { variables: { value } }))

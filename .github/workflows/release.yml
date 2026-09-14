@@ -38,10 +38,16 @@ jobs:
         run: |
           mkdir release
           npm pack --ignore-scripts --pack-destination release
+      - name: Package VS Code extension
+        working-directory: editors/vscode
+        run: pnpm dlx @vscode/vsce@3.9.2 package --out ../../release/knap.vsix
+      - name: Package Sublime Text extension
+        working-directory: editors/sublime
+        run: zip -9 -r ../../release/Knap.sublime-package . -x "syntax_test_*"
       - name: Generate artifact attestation
         uses: actions/attest@v4
         with:
-          subject-path: release/*.tgz
+          subject-path: release/*
       - name: Publish to npm
         run: npm publish ./release/*.tgz --access public --provenance
       - name: Create draft GitHub release
@@ -51,4 +57,4 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             --title="$GITHUB_REF_NAME" \
             --draft \
-            release/*.tgz
+            release/*
