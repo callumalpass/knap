@@ -1,4 +1,3 @@
-import { version } from '../../package.json';
 import { filterDocs } from '../../src/docs/filter-docs';
 import { logicDocs } from '../../website/lib/logic-docs';
 import { clipperHelpLogic } from './clipper-help';
@@ -17,7 +16,6 @@ export interface RenderFixture {
 
 export interface RenderCorpus {
 	format_version: number;
-	knap_version: string;
 	preset: string;
 	cases: RenderFixture[];
 }
@@ -73,7 +71,6 @@ const diagnostics: RenderFixture[] = [
 export function documentedRenderCorpus(): RenderCorpus {
 	return {
 		format_version: 1,
-		knap_version: version,
 		preset: 'standard',
 		cases: [
 			...filterDocs

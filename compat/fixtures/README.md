@@ -16,12 +16,11 @@ The top-level object contains:
 | Field | Meaning |
 | --- | --- |
 | `format_version` | Fixture format version. Reject unsupported versions. |
-| `knap_version` | Package version when the corpus was exported. |
 | `preset` | Filter registry to use; currently `standard`. |
 | `cases` | Array of independent rendering cases. |
 
 Pin the repository commit or release containing the corpus as well as the format
-version. The package version alone does not identify changes between releases.
+version. Releases can add cases without changing the fixture format.
 Case IDs are descriptive identifiers within that pinned corpus; source example
 renames can change them.
 
@@ -48,6 +47,12 @@ For example:
   "expected": { "output": "HELLO", "errors": [], "warnings": [] }
 }
 ```
+
+Object key order is significant. Load `variables`, including nested objects,
+with a parser that preserves the order in which keys appear in the file, such as
+`serde_json` with its `preserve_order` feature. Filters that serialize or
+iterate objects, including the YAML filters, emit keys in that order, so a
+sorted or hashed map produces different output for some cases.
 
 Render every case with the standard filters, default render options and limits,
 fresh variables, and no custom filters or variable resolver. Compare output
@@ -90,7 +95,10 @@ pnpm test:compat
 documentation and selected regression tests. The runner checks that the committed
 JSON matches those sources, then renders the cases from the committed JSON.
 This keeps the documentation, exported cases, and TypeScript implementation in
-agreement without maintaining a second set of expected outputs.
+agreement without maintaining a second set of expected outputs for the
+documentation and Clipper examples. The few diagnostic cases are written out in
+`tests/fixtures/portable-render.ts`; update them by hand when the regression
+tests named in their `source` change.
 
 After intentionally changing a source example or adding a reviewed expectation:
 
